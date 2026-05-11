@@ -1,0 +1,80 @@
+{
+  "name": "WalletTransaction",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "deduction",
+        "refund"
+      ],
+      "description": "Transaction type"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Transaction amount in PKR"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "jazzcash",
+        "easypaisa",
+        "bank_transfer",
+        "system"
+      ],
+      "description": "Payment method"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Transaction status"
+    },
+    "reference": {
+      "type": "string",
+      "description": "Payment reference/transaction ID"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "balance_after": {
+      "type": "number",
+      "description": "Balance after transaction"
+    }
+  },
+  "required": [
+    "type",
+    "amount"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

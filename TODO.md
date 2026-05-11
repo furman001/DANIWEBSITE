@@ -1,0 +1,5 @@
+- [x] Inspect repo config (package.json, jsconfig.json, vite.config.js) and search for port/config references
+- [x] Determine whether Vercel failure is likely port-related vs config/tooling issue
+- [x] Run local `npm run build` and `npm run typecheck` to confirm local build health
+- [x] Update .gitignore to ignore node_modules (cleanup)
+- [ ] (Optional) Re-run Vercel build and verify the jsconfig.json-related error is resolved

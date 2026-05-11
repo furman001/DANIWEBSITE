@@ -1,0 +1,85 @@
+{
+  "name": "SMMService",
+  "type": "object",
+  "properties": {
+    "service_id": {
+      "type": "string",
+      "description": "Unique service identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Service name"
+    },
+    "category": {
+      "type": "string",
+      "description": "Service category"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "tiktok",
+        "instagram",
+        "facebook",
+        "youtube",
+        "twitter",
+        "telegram",
+        "snapchat",
+        "spotify",
+        "discord",
+        "whatsapp",
+        "other"
+      ],
+      "description": "Social media platform"
+    },
+    "rate_per_1000": {
+      "type": "number",
+      "description": "Rate per 1000 in PKR"
+    },
+    "min_quantity": {
+      "type": "number",
+      "default": 10,
+      "description": "Minimum order quantity"
+    },
+    "max_quantity": {
+      "type": "number",
+      "default": 1000000,
+      "description": "Maximum order quantity"
+    },
+    "avg_time": {
+      "type": "string",
+      "description": "Average completion time"
+    },
+    "description": {
+      "type": "string",
+      "description": "Service description"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether service is active"
+    }
+  },
+  "required": [
+    "name",
+    "platform",
+    "rate_per_1000"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
