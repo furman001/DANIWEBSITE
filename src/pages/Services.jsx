@@ -8,20 +8,17 @@ import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from 'react-router-dom';
 import {
-  Search, Globe, Eye, ArrowRight
+  Search, Globe, Eye, ArrowRight, Zap, Star, ShieldCheck, Filter, Info
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const platformFilters = [
-  { id: 'all', label: 'All', icon: '🌐' },
+  { id: 'all', label: 'All', icon: <Globe className="w-4 h-4" /> },
   { id: 'tiktok', label: 'TikTok', icon: '🎵' },
   { id: 'instagram', label: 'Instagram', icon: '📷' },
   { id: 'facebook', label: 'Facebook', icon: '📘' },
   { id: 'youtube', label: 'YouTube', icon: '▶️' },
   { id: 'twitter', label: 'Twitter', icon: '🐦' },
-  { id: 'telegram', label: 'Telegram', icon: '✈️' },
-  { id: 'whatsapp', label: 'WhatsApp', icon: '💬' },
-  { id: 'spotify', label: 'Spotify', icon: '🎧' },
-  { id: 'discord', label: 'Discord', icon: '🎮' },
 ];
 
 export default function Services() {
@@ -43,122 +40,198 @@ export default function Services() {
   });
 
   const filtered = services.filter(s => {
-    const matchesPlatform = activePlatform === 'all' || s.platform === activePlatform;
+    const matchesPlatform = activePlatform === 'all' || s.platform?.toLowerCase() === activePlatform.toLowerCase();
     const matchesSearch = !search || s.name?.toLowerCase().includes(search.toLowerCase()) || s.category?.toLowerCase().includes(search.toLowerCase());
     return matchesPlatform && matchesSearch && s.is_active !== false;
   });
 
-  // Group by category
   const grouped = filtered.reduce((acc, s) => {
-    const cat = s.category || 'Other';
+    const cat = s.category || 'Premium Services';
     if (!acc[cat]) acc[cat] = [];
     acc[cat].push(s);
     return acc;
   }, {});
 
   return (
-    <div className="py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="font-heading text-3xl sm:text-4xl font-bold mb-2">
-            DM Social Panel — Best SMM Services in Pakistan
-          </h1>
-          <p className="text-muted-foreground">
-            Here you can get any social media services. We provide top notch services working 99% according to description.
-          </p>
-        </div>
-
-        {/* Platform Filters */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {platformFilters.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setActivePlatform(p.id)}
-              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all border ${
-                activePlatform === p.id
-                  ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20'
-                  : 'bg-card border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
-              }`}
-            >
-              <span>{p.icon}</span>
-              {p.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Search */}
-        <div className="relative mb-8">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search services..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 h-12 rounded-xl bg-card border-border/50"
-          />
-        </div>
-
-        {/* Services Table */}
-        {isLoading ? (
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-16 rounded-xl" />
-            ))}
+    <div className="space-y-12 pb-20">
+      {/* Page Header */}
+      <div className="relative p-10 sm:p-16 rounded-[3rem] bg-slate-950 text-white overflow-hidden shadow-2xl">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -mr-64 -mt-64" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-10">
+          <div className="max-w-2xl space-y-6">
+            <div className="inline-flex items-center gap-2 bg-primary/20 px-4 py-2 rounded-full border border-primary/30">
+               <Zap className="w-4 h-4 text-primary" />
+               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Live Service Directory</span>
+            </div>
+            <h1 className="font-heading text-4xl sm:text-6xl font-black tracking-tighter leading-none">
+              Premium <span className="text-primary">SMM</span> <br />
+              Solutions Provider.
+            </h1>
+            <p className="text-white/60 text-lg font-medium leading-relaxed">
+              Explore Pakistan's most comprehensive catalog of social media growth services. 
+              Real-time pricing, instant activation, and guaranteed quality.
+            </p>
           </div>
-        ) : Object.keys(grouped).length === 0 ? (
-          <Card className="p-12 text-center">
-            <Globe className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-            <h3 className="font-heading font-semibold text-lg mb-1">No services found</h3>
-            <p className="text-sm text-muted-foreground">Try a different search or filter.</p>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            {Object.entries(grouped).map(([category, items]) => (
-              <div key={category}>
-                <div className="bg-primary/10 border border-primary/20 rounded-xl px-5 py-3 mb-2">
-                  <h3 className="font-heading font-bold text-sm text-primary">{category}</h3>
+          
+          <div className="flex flex-col gap-4">
+             <div className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                <ShieldCheck className="w-6 h-6 text-primary" />
+                <div>
+                   <div className="font-black text-sm uppercase tracking-tight">Verified Services</div>
+                   <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">99.9% Success Rate</div>
                 </div>
-                <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
-                  {/* Table Header */}
-                  <div className="hidden sm:grid grid-cols-12 gap-4 px-5 py-3 bg-muted/50 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    <div className="col-span-1">ID</div>
-                    <div className="col-span-4">Service</div>
-                    <div className="col-span-2">Rate/1000</div>
-                    <div className="col-span-1">Min</div>
-                    <div className="col-span-1">Max</div>
-                    <div className="col-span-2">Avg Time</div>
-                    <div className="col-span-1"></div>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Filters Sidebar */}
+        <aside className="lg:w-72 space-y-8">
+          <div className="bg-card rounded-[2rem] border border-border/50 p-8 premium-shadow">
+            <div className="flex items-center gap-2 mb-6">
+               <Filter className="w-4 h-4 text-primary" />
+               <h3 className="font-heading font-black text-sm uppercase tracking-wider">Refine Search</h3>
+            </div>
+            
+            <div className="relative mb-8">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-11 h-14 rounded-2xl bg-muted/30 border-transparent focus:bg-background focus:border-primary/30 transition-all"
+              />
+            </div>
+
+            <div className="space-y-2">
+               <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4 px-2">Platforms</div>
+               <div className="grid grid-cols-1 gap-1">
+                 {platformFilters.map((p) => (
+                   <button
+                     key={p.id}
+                     onClick={() => setActivePlatform(p.id)}
+                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                       activePlatform === p.id
+                         ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-[1.02]'
+                         : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                     }`}
+                   >
+                     <span className="text-lg leading-none">{p.icon}</span>
+                     <span className="flex-1 text-left">{p.label}</span>
+                     {activePlatform === p.id && <Zap className="w-3 h-3 fill-current" />}
+                   </button>
+                 ))}
+               </div>
+            </div>
+          </div>
+
+          <div className="bg-primary/5 rounded-[2rem] p-8 border border-primary/10">
+             <div className="flex items-center gap-2 mb-4">
+                <Info className="w-4 h-4 text-primary" />
+                <h4 className="font-heading font-black text-xs uppercase tracking-wider">Service Note</h4>
+             </div>
+             <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                Avg. time is calculated based on last 50 orders. Rates are subject to change.
+             </p>
+          </div>
+        </aside>
+
+        {/* Services Main List */}
+        <div className="flex-1 space-y-10">
+          {isLoading ? (
+            <div className="space-y-6">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="space-y-3">
+                   <Skeleton className="h-12 w-48 rounded-xl" />
+                   <Skeleton className="h-64 w-full rounded-[2rem]" />
+                </div>
+              ))}
+            </div>
+          ) : Object.keys(grouped).length === 0 ? (
+            <div className="bg-card rounded-[3rem] p-20 text-center border border-border/50">
+              <Globe className="w-16 h-16 text-muted-foreground/20 mx-auto mb-6" />
+              <h3 className="font-heading font-black text-2xl uppercase tracking-tight mb-2">No results found</h3>
+              <p className="text-muted-foreground font-medium">Try adjusting your filters or search keywords.</p>
+            </div>
+          ) : (
+            <div className="space-y-12">
+              {Object.entries(grouped).map(([category, items], catIdx) => (
+                <motion.div 
+                  key={category}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: catIdx * 0.1 }}
+                  className="space-y-4"
+                >
+                  <div className="flex items-center gap-4 px-2">
+                     <div className="h-2 w-2 rounded-full bg-primary" />
+                     <h3 className="font-heading font-black text-xl tracking-tight uppercase">{category}</h3>
+                     <div className="flex-1 h-px bg-border/60" />
+                     <Badge variant="outline" className="rounded-full border-primary/30 text-primary font-black uppercase text-[10px] px-3">{items.length} Services</Badge>
                   </div>
-                  {/* Table Rows */}
-                  {items.map((service) => (
-                    <div
-                      key={service.id}
-                      className="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 px-5 py-3.5 border-t border-border/30 hover:bg-muted/20 transition-colors items-center"
-                    >
-                      <div className="sm:col-span-1 text-xs text-primary font-semibold">
-                        {service.service_id || '—'}
-                      </div>
-                      <div className="sm:col-span-4 text-sm font-medium">{service.name}</div>
-                      <div className="sm:col-span-2 text-sm font-semibold text-primary">
-                        Rs {service.rate_per_1000}
-                      </div>
-                      <div className="sm:col-span-1 text-xs text-muted-foreground">{service.min_quantity || 10}</div>
-                      <div className="sm:col-span-1 text-xs text-muted-foreground">{service.max_quantity?.toLocaleString() || '1M'}</div>
-                      <div className="sm:col-span-2 text-xs text-muted-foreground">{service.avg_time || '—'}</div>
-                      <div className="sm:col-span-1">
-                        <Link to={`/new-order?service=${service.id}`}>
-                          <Button size="sm" className="h-7 text-xs px-3 rounded-lg">
-                            Order
-                          </Button>
-                        </Link>
-                      </div>
+
+                  <div className="bg-card rounded-[2.5rem] border border-border/50 overflow-hidden premium-shadow">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-muted/30 border-b border-border/50">
+                            <th className="px-8 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest w-20">ID</th>
+                            <th className="px-8 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Service Details</th>
+                            <th className="px-8 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest w-32">Rate/1K</th>
+                            <th className="px-8 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest w-40">Performance</th>
+                            <th className="px-8 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest w-32">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/30">
+                          {items.map((service) => (
+                            <tr key={service.id} className="hover:bg-muted/10 transition-colors group">
+                              <td className="px-8 py-6">
+                                <span className="text-xs font-black text-primary bg-primary/5 px-2 py-1 rounded-md">{service.service_id || '—'}</span>
+                              </td>
+                              <td className="px-8 py-6">
+                                <div className="space-y-1">
+                                  <div className="font-bold text-sm leading-tight group-hover:text-primary transition-colors">{service.name}</div>
+                                  <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                                     <span>Min: {service.min_quantity?.toLocaleString() || 10}</span>
+                                     <span className="w-1 h-1 rounded-full bg-border" />
+                                     <span>Max: {service.max_quantity?.toLocaleString() || '1M'}</span>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-8 py-6">
+                                <div className="font-black text-sm text-foreground">Rs {service.rate_per_1000}</div>
+                              </td>
+                              <td className="px-8 py-6">
+                                <div className="space-y-1.5">
+                                   <div className="flex items-center gap-2">
+                                      <Zap className="w-3 h-3 text-yellow-500 fill-current" />
+                                      <span className="text-[10px] font-black uppercase text-foreground">{service.avg_time || '—'} Avg.</span>
+                                   </div>
+                                   <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+                                      <div className="h-full bg-primary w-3/4 rounded-full" />
+                                   </div>
+                                </div>
+                              </td>
+                              <td className="px-8 py-6">
+                                <Link to={`/new-order?service=${service.id}`}>
+                                  <Button size="sm" className="h-10 px-6 font-black uppercase text-[10px] rounded-xl shadow-xl shadow-primary/10 hover:shadow-primary/30 transition-all">
+                                    Order
+                                  </Button>
+                                </Link>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

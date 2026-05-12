@@ -2,113 +2,112 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, Sparkles, Star, Zap, Shield, Trophy } from 'lucide-react';
 
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/30 py-16 sm:py-24 lg:py-28">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-primary/8 blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/3 blur-[100px]" />
+    <section className="relative overflow-hidden bg-background pt-20 pb-16 sm:pt-32 sm:pb-24 lg:pt-40 lg:pb-32">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,hsl(var(--primary)/0.15),transparent_70%)]" />
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-pulse delay-1000" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+          {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 bg-primary/5 border border-primary/10 rounded-full px-4 py-2 mb-8 glass animate-reveal"
           >
-            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs font-semibold text-primary uppercase tracking-wider">#1 SMM Panel in Pakistan</span>
-            </div>
-
-            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] mb-6">
-              Pakistan's{' '}
-              <span className="text-primary relative">
-                Best
-                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
-                  <path d="M2 8C50 2 150 2 198 8" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round" opacity="0.4"/>
-                </svg>
-              </span>{' '}
-              <br />
-              <span className="text-primary">SMM Panel</span>{' '}
-              <br className="hidden sm:block" />
-              Provider
-            </h1>
-
-            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed mb-8 max-w-lg">
-              Welcome to <strong className="text-foreground">DM Social Panel</strong> — your go-to destination for high-quality, 
-              cheapest social media marketing services at unbeatable prices for Instagram, TikTok, YouTube, Facebook, and more.
-            </p>
-
-            <div className="flex flex-wrap gap-3">
-              <Link to="/dashboard">
-                <Button size="lg" className="font-heading font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all px-8">
-                  Get Started
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-              <Link to="/services">
-                <Button variant="outline" size="lg" className="font-heading font-semibold px-8">
-                  View Services
-                </Button>
-              </Link>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="flex items-center gap-6 mt-8 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1.5">
-                <div className="flex -space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
+            <div className="flex -space-x-1">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="w-5 h-5 rounded-full border-2 border-background bg-primary/20 flex items-center justify-center overflow-hidden">
+                   <Star className="w-2.5 h-2.5 text-primary fill-current" />
                 </div>
-                <span className="font-medium">4.9/5</span>
-              </div>
-              <div className="h-4 w-px bg-border" />
-              <span>23K+ Active Users</span>
+              ))}
             </div>
+            <span className="text-xs font-bold text-primary uppercase tracking-[0.15em]">Rated #1 SMM Provider in Pakistan</span>
           </motion.div>
 
-          {/* Right Visual */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="hidden lg:block relative"
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="font-heading text-5xl sm:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tight mb-8"
           >
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&h=600&fit=crop&crop=center"
-                alt="Social Media Marketing"
-                className="rounded-3xl shadow-2xl w-full max-w-md mx-auto object-cover aspect-square"
-              />
-              {/* Floating Cards */}
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -top-4 -right-4 bg-card rounded-2xl shadow-xl p-4 border border-border/50"
-              >
-                <div className="text-2xl font-heading font-bold text-primary">120K+</div>
-                <div className="text-xs text-muted-foreground font-medium">Orders Completed</div>
-              </motion.div>
-              <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 1.5 }}
-                className="absolute -bottom-4 -left-4 bg-card rounded-2xl shadow-xl p-4 border border-border/50"
-              >
-                <div className="text-2xl font-heading font-bold text-primary">735+</div>
-                <div className="text-xs text-muted-foreground font-medium">Active Services</div>
-              </motion.div>
-            </div>
+            Scale Your Social <br />
+            <span className="text-primary inline-block relative">
+              Presence
+              <div className="absolute -bottom-2 left-0 w-full h-3 bg-primary/10 -skew-x-12 -z-10" />
+            </span> <br />
+            With Confidence.
+          </motion.h1>
+
+          {/* Description */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-12 max-w-2xl font-medium"
+          >
+            Experience the next generation of social media marketing. 
+            Instant delivery, unbeatable prices, and 24/7 premium support 
+            for all your social growth needs.
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+          >
+            <Link to="/dashboard" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:h-16 sm:px-10 text-lg font-bold rounded-2xl shadow-2xl shadow-primary/30 group">
+                Get Started Now
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link to="/services" className="w-full sm:w-auto">
+              <Button variant="outline" size="lg" className="w-full sm:h-16 sm:px-10 text-lg font-bold rounded-2xl border-2 glass transition-all">
+                View All Services
+              </Button>
+            </Link>
+          </motion.div>
+
+          {/* Trust Indicators */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 w-full border-t border-border/50 pt-10"
+          >
+            {[
+              { icon: Zap, label: "Instant Delivery", sub: "Within minutes" },
+              { icon: Shield, label: "Secure Payments", sub: "100% Protection" },
+              { icon: Trophy, label: "Premium Support", sub: "24/7 Live Help" },
+              { icon: Star, label: "Top Quality", sub: "Real engagement" }
+            ].map((item, i) => (
+              <div key={i} className="flex flex-col items-center gap-2 group">
+                <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500">
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <div className="text-center">
+                  <div className="font-bold text-sm">{item.label}</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">{item.sub}</div>
+                </div>
+              </div>
+            ))}
           </motion.div>
         </div>
       </div>
     </section>
   );
+}
+
 }
