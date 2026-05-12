@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Zap, Mail, Phone, MapPin } from 'lucide-react';
+import { Zap, Mail, Phone, MapPin, Shield } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -63,8 +63,20 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-background/10 mt-10 pt-6 text-center text-sm text-background/40">
-          <p>&copy; {new Date().getFullYear()} DM Social Panel. All rights reserved.</p>
+        <div className="border-t border-background/10 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-background/40">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <p>&copy; {new Date().getFullYear()} DM Social Panel. All rights reserved.</p>
+            <div className="flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:border-primary/30 transition-colors group">
+              <Shield className="w-3.5 h-3.5 text-primary/60 group-hover:text-primary transition-colors" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-background/40 group-hover:text-background/60 transition-colors">Admin Panel</span>
+              <div className="w-px h-3 bg-white/10" />
+              <div className="flex items-center gap-3">
+                <Link to="/admin-login" className="text-[11px] font-semibold hover:text-primary transition-colors">Sign In</Link>
+                <span className="opacity-20 text-[10px]">|</span>
+                <Link to="/admin-signup" className="text-[11px] font-semibold hover:text-primary transition-colors">Sign Up</Link>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

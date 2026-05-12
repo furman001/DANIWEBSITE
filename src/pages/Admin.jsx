@@ -21,8 +21,18 @@ export default function Admin() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('orders');
 
-  if (user && user.role !== 'admin') {
-    navigate('/dashboard');
+  const hasLocalAdminSession = (() => {
+    try {
+      return localStorage.getItem('admin_session') === 'true';
+    } catch {
+      return false;
+    }
+  })();
+
+  const isAllowed = user?.role === 'admin' || hasLocalAdminSession;
+
+  if (!isAllowed) {
+    navigate('/admin-login');
     return null;
   }
 

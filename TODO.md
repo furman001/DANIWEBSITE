@@ -3,3 +3,8 @@
 - [x] Run local `npm run build` and `npm run typecheck` to confirm local build health
 - [x] Update .gitignore to ignore node_modules (cleanup)
 - [ ] (Optional) Re-run Vercel build and verify the jsconfig.json-related error is resolved
+- [ ] Implement admin panel quick access (bottom-left button)
+- [ ] Add admin login page (username/password: admin / admin123) using local admin session flag
+- [ ] Add /admin-login route and gate /admin access for local admin session
+- [ ] Clear admin session on logout
+- [ ] Run `npm run lint` and `npm run build` to verify changes

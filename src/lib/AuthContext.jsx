@@ -178,10 +178,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = (shouldRedirect = true) => {
-    signOut();
-    if (shouldRedirect) {
-      window.location.href = '/';
+  const logout = async (shouldRedirect = true) => {
+    // Clear local admin session (used by AdminLogin/Admin page gating)
+    try {
+      localStorage.removeItem('admin_session');
+    } catch {}
+    try {
+      await signOut();
+    } finally {
+      if (shouldRedirect) {
+        window.location.href = '/';
+      }
     }
   };
 

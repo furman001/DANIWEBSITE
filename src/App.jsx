@@ -24,6 +24,8 @@ import NewOrder from './pages/NewOrder';
 import Orders from './pages/Orders';
 import AddFunds from './pages/AddFunds';
 import Admin from './pages/Admin';
+import AdminLogin from './pages/AdminLogin';
+import AdminSignup from './pages/AdminSignup';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -66,6 +68,8 @@ const AuthenticatedApp = () => {
         <Route path="/orders" element={<Orders />} />
         <Route path="/add-funds" element={<AddFunds />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/admin-signup" element={<AdminSignup />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />

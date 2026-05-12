@@ -20,7 +20,7 @@ const sidebarLinks = [
 
 function SidebarContent({ onNavigate }) {
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
 
   const links = [
     ...sidebarLinks,
@@ -87,8 +87,36 @@ function SidebarContent({ onNavigate }) {
           <Home className="w-4 h-4" />
           Back to Home
         </Link>
+
+        {(() => {
+          const hasLocalAdminSession = (() => {
+            try {
+              return localStorage.getItem('admin_session') === 'true';
+            } catch {
+              return false;
+            }
+          })();
+
+          const isAdmin = user?.role === 'admin' || hasLocalAdminSession;
+
+          if (!user) return null;
+
+          if (!isAdmin) return null;
+
+          return (
+            <Link
+              to="/admin"
+              onClick={onNavigate}
+              className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all w-fit"
+            >
+              <Shield className="w-4 h-4" />
+              Admin Panel
+            </Link>
+          );
+        })()}
+
         <button
-          onClick={() => signOut()}
+          onClick={() => logout(true)}
           className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-all"
         >
           <LogOut className="w-4 h-4" />
@@ -107,7 +135,7 @@ function OrderSyncManager() {
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
-  const { signOut } = useAuth();
+  const { logout } = useAuth();
 
   return (
     <div className="min-h-screen flex bg-background font-body">
@@ -136,7 +164,7 @@ export default function DashboardLayout() {
             </div>
             <span className="font-heading font-bold text-sm">PAK SMM PORTAL</span>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => signOut()} className="text-destructive hover:bg-destructive/10">
+          <Button variant="ghost" size="icon" onClick={() => logout(true)} className="text-destructive hover:bg-destructive/10">
             <LogOut className="w-5 h-5" />
           </Button>
         </div>
