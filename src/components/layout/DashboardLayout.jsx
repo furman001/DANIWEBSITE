@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -108,8 +109,6 @@ function SidebarContent({ onNavigate }) {
     </div>
   );
 }
-
-import { motion } from 'framer-motion';
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);

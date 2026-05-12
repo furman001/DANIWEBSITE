@@ -22,8 +22,8 @@ export default function SpendingChart({ orders }) {
     const last14 = Array.from({ length: 14 }, (_, i) => {
       const day = startOfDay(subDays(new Date(), 13 - i));
       const dayOrders = orders.filter(o => {
-        if (!o.created_date) return false;
-        return startOfDay(new Date(o.created_date)).getTime() === day.getTime();
+        if (!o.created_at) return false;
+        return startOfDay(new Date(o.created_at)).getTime() === day.getTime();
       });
       return {
         date: format(day, 'MMM d'),

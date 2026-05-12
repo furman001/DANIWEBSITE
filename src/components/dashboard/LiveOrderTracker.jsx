@@ -71,7 +71,7 @@ export default function LiveOrderTracker({ orders, isLoading }) {
                     <p className="text-sm font-medium truncate leading-tight">{order.service_name}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
                       Qty: {order.quantity?.toLocaleString()} •{' '}
-                      {order.created_date ? format(new Date(order.created_date), 'MMM d, HH:mm') : '—'}
+                      {order.created_at ? format(new Date(order.created_at), 'MMM d, HH:mm') : '—'}
                     </p>
                   </div>
                   <div className="text-right flex-shrink-0">
