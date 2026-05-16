@@ -19,6 +19,13 @@ const sidebarLinks = [
   { label: 'Add Funds', path: '/add-funds', icon: Wallet },
 ];
 
+const bottomNavLinks = [
+  { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+  { label: 'New Order', path: '/new-order', icon: Plus },
+  { label: 'Orders', path: '/orders', icon: History },
+  { label: 'Add Funds', path: '/add-funds', icon: Wallet },
+];
+
 function SidebarContent({ onNavigate }) {
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -113,6 +120,7 @@ function SidebarContent({ onNavigate }) {
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
   const { user, logout } = useAuth();
+  const location = useLocation();
 
   useOrderSync(user?.email, user?.role === 'admin');
 
@@ -133,29 +141,28 @@ export default function DashboardLayout() {
       {/* Main Content */}
       <div className="flex-1 lg:ml-72 flex flex-col min-h-screen">
         {/* Top Header */}
-        <header className="sticky top-0 z-40 h-20 bg-background/80 backdrop-blur-xl border-b border-border/50 px-4 sm:px-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-             <Button variant="ghost" size="icon" onClick={() => setOpen(true)} className="lg:hidden rounded-full">
-               <Menu className="w-6 h-6" />
+        <header className="sticky top-0 z-40 h-16 sm:h-20 bg-background/80 backdrop-blur-xl border-b border-border/50 px-4 sm:px-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+             <Button variant="ghost" size="icon" onClick={() => setOpen(true)} className="lg:hidden rounded-full h-9 w-9">
+               <Menu className="w-5 h-5" />
              </Button>
-             <div className="hidden sm:flex flex-col">
-                <h2 className="font-heading font-black text-xl tracking-tight leading-none uppercase">Account Panel</h2>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Management Console</p>
+             <div className="flex flex-col">
+                <h2 className="font-heading font-black text-base sm:text-xl tracking-tight leading-none uppercase">Account Panel</h2>
+                <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Management Console</p>
              </div>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-6">
-             <div className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-full bg-primary/5 border border-primary/10">
-                <Wallet className="w-4 h-4 text-primary" />
-                <span className="text-sm font-black">Rs {user?.wallet_balance?.toLocaleString() || '0.00'}</span>
+          <div className="flex items-center gap-2 sm:gap-6">
+             <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-primary/5 border border-primary/10">
+                <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+                <span className="text-xs sm:text-sm font-black">Rs {user?.wallet_balance?.toLocaleString() || '0'}</span>
              </div>
              
-             <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="rounded-full relative">
-                   <Bell className="w-5 h-5" />
-                   <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-background" />
+             <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" className="rounded-full relative h-9 w-9">
+                   <Bell className="w-4 h-4" />
+                   <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-primary rounded-full border border-background" />
                 </Button>
-                <div className="h-8 w-px bg-border/60 mx-1 hidden sm:block" />
                 <Button variant="ghost" className="hidden sm:flex items-center gap-2 px-2 rounded-full hover:bg-muted/50">
                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs uppercase">
                       {user?.name?.[0] || 'U'}
@@ -166,15 +173,53 @@ export default function DashboardLayout() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-8 lg:p-10 animate-reveal">
+        <main className="flex-1 p-4 sm:p-8 lg:p-10 pb-24 lg:pb-10 animate-reveal">
            <Outlet />
         </main>
 
-        {/* Footer info */}
-        <footer className="p-6 border-t border-border/50 text-center">
+        {/* Footer info — hidden on mobile */}
+        <footer className="hidden sm:block p-6 border-t border-border/50 text-center">
            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">&copy; {new Date().getFullYear()} Pak SMM Portal • All Systems Operational</p>
         </footer>
       </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/60 safe-area-pb">
+        <div className="flex items-center justify-around px-2 py-2">
+          {bottomNavLinks.map((link) => {
+            const isActive = location.pathname === link.path;
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all duration-200 min-w-0 flex-1 ${
+                  isActive
+                    ? 'text-primary'
+                    : 'text-muted-foreground'
+                }`}
+              >
+                <div className={`relative flex items-center justify-center w-10 h-10 rounded-2xl transition-all duration-200 ${
+                  isActive ? 'bg-primary/10 scale-105' : 'hover:bg-muted/60'
+                }`}>
+                  {isActive && link.path === '/new-order' ? (
+                    <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+                      <link.icon className="w-5 h-5 text-primary-foreground" />
+                    </div>
+                  ) : (
+                    <link.icon className={`w-5 h-5 ${ isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                  )}
+                  {isActive && (
+                    <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
+                  )}
+                </div>
+                <span className={`text-[10px] font-bold truncate transition-colors ${
+                  isActive ? 'text-primary' : 'text-muted-foreground'
+                }`}>{link.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

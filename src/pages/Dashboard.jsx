@@ -63,7 +63,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-10 animate-reveal">
       {/* Top Status Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-3 bg-card border border-border/50 rounded-full premium-shadow">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 px-4 sm:px-6 py-2 sm:py-3 bg-card border border-border/50 rounded-2xl sm:rounded-full premium-shadow">
          <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
                {[1,2,3].map(i => (
@@ -71,7 +71,7 @@ export default function Dashboard() {
                ))}
             </div>
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-               <span className="text-green-500">234</span> users active right now
+               <span className="text-green-500">234</span> users active
             </p>
          </div>
          <div className="flex items-center gap-6">
@@ -88,7 +88,7 @@ export default function Dashboard() {
       </div>
 
       {/* Welcome Header */}
-      <div className="relative overflow-hidden rounded-[3rem] bg-slate-950 p-10 sm:p-16 shadow-2xl shadow-black/20 group">
+      <div className="relative overflow-hidden rounded-[2rem] sm:rounded-[3rem] bg-slate-950 p-6 sm:p-10 lg:p-16 shadow-2xl shadow-black/20 group">
         {/* Animated Background Gradients */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -mr-48 -mt-48 group-hover:bg-primary/20 transition-colors duration-700" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -ml-32 -mb-32" />
@@ -108,7 +108,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="font-heading text-5xl sm:text-7xl font-black text-white tracking-tighter leading-none"
+              className="font-heading text-4xl sm:text-5xl lg:text-7xl font-black text-white tracking-tighter leading-none"
             >
               Command <br />
               <span className="text-primary italic">Center</span>.
@@ -131,13 +131,13 @@ export default function Dashboard() {
             </motion.div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 w-full md:w-auto">
              <Button 
                 onClick={handleRefresh} 
                 disabled={isLoading}
-                className="h-16 px-10 rounded-2xl bg-white text-slate-950 hover:bg-white/90 font-black text-lg shadow-2xl transition-all active:scale-95"
+                className="w-full md:w-auto h-12 sm:h-16 px-6 sm:px-10 rounded-2xl bg-white text-slate-950 hover:bg-white/90 font-black text-sm sm:text-lg shadow-2xl transition-all active:scale-95"
              >
-                <RefreshCw className={`w-5 h-5 mr-3 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 ${isLoading ? 'animate-spin' : ''}`} />
                 REFRESH
              </Button>
           </div>
@@ -145,9 +145,9 @@ export default function Dashboard() {
       </div>
 
       {/* Main Grid */}
-      <div className="grid lg:grid-cols-4 gap-10">
+      <div className="grid lg:grid-cols-4 gap-6 sm:gap-10">
         {/* Stats Column */}
-        <div className="lg:col-span-3 space-y-12">
+        <div className="lg:col-span-3 space-y-8 sm:space-y-12">
           <StatsGrid
             walletBalance={walletBalance}
             orders={orders}
@@ -157,8 +157,8 @@ export default function Dashboard() {
           
           <QuickActions />
 
-          <div className="grid md:grid-cols-2 gap-10">
-            <div className="premium-card rounded-[3rem] bg-card p-10">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-10">
+            <div className="premium-card rounded-[2rem] sm:rounded-[3rem] bg-card p-6 sm:p-10">
               <div className="flex items-center justify-between mb-10">
                  <div className="flex items-center gap-3">
                     <div className="w-1.5 h-6 bg-primary rounded-full" />
@@ -172,8 +172,8 @@ export default function Dashboard() {
               {/* <SpendingChart orders={orders} /> */}
             </div>
 
-            <div className="premium-card rounded-[3rem] bg-card p-10">
-               <div className="flex items-center gap-3 mb-10">
+            <div className="premium-card rounded-[2rem] sm:rounded-[3rem] bg-card p-6 sm:p-10">
+               <div className="flex items-center gap-3 mb-6 sm:mb-10">
                   <div className="w-1.5 h-6 bg-blue-500 rounded-full" />
                   <h3 className="font-heading font-black text-xl tracking-tight uppercase">Platform Mix</h3>
                </div>
@@ -181,8 +181,8 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="premium-card rounded-[3rem] bg-card p-10">
-             <div className="flex items-center justify-between mb-10">
+          <div className="premium-card rounded-[2rem] sm:rounded-[3rem] bg-card p-6 sm:p-10">
+             <div className="flex items-center justify-between mb-6 sm:mb-10">
                 <div className="flex items-center gap-3">
                    <div className="w-1.5 h-6 bg-indigo-500 rounded-full" />
                    <h3 className="font-heading font-black text-xl tracking-tight uppercase">Real-time Activity</h3>
@@ -197,7 +197,7 @@ export default function Dashboard() {
         </div>
 
         {/* Sidebar Info */}
-        <div className="space-y-10 sticky top-28">
+        <div className="space-y-6 sm:space-y-10 lg:sticky lg:top-28">
           {/* <AIInsights
             orders={orders}
             walletBalance={walletBalance}
@@ -205,7 +205,7 @@ export default function Dashboard() {
           /> */}
           
           {/* Security Card */}
-          <div className="bg-slate-900 rounded-[3rem] p-10 text-white relative overflow-hidden group">
+          <div className="bg-slate-900 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 text-white relative overflow-hidden group">
              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-primary/30 transition-colors duration-500" />
              <div className="relative z-10 space-y-6">
                 <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">

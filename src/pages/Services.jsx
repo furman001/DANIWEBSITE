@@ -54,43 +54,42 @@ export default function Services() {
   return (
     <div className="space-y-12 pb-24">
       {/* Header Section */}
-      <div className="relative overflow-hidden rounded-[3rem] bg-slate-950 p-12 lg:p-20 shadow-2xl">
+      <div className="relative overflow-hidden rounded-[2rem] sm:rounded-[3rem] bg-slate-950 p-6 sm:p-12 lg:p-20 shadow-2xl">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] -mr-32 -mt-32" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -ml-32 -mb-32" />
         
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-12">
-          <div className="max-w-2xl space-y-8">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-12">
+          <div className="max-w-2xl space-y-4 sm:space-y-8">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30"
+              className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-primary/20 border border-primary/30"
             >
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Global Service Directory</span>
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+              <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-primary">Global Service Directory</span>
             </motion.div>
             
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="font-heading text-5xl lg:text-7xl font-black text-white tracking-tighter leading-none"
+              className="font-heading text-3xl sm:text-5xl lg:text-7xl font-black text-white tracking-tighter leading-none"
             >
               Unlock Unlimited <br />
-              <span className="text-primary italic">Growth</span> Potential.
+              <span className="text-primary italic">Growth</span>.
             </motion.h1>
             
             <motion.p 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-white/60 text-lg lg:text-xl font-medium leading-relaxed max-w-xl"
+              className="text-white/60 text-sm sm:text-lg font-medium leading-relaxed max-w-xl"
             >
-              Browse our curated collection of high-performance SMM services. 
-              Built for speed, reliability, and massive results.
+              Browse high-performance SMM services. Built for speed and results.
             </motion.p>
           </div>
           
-          <div className="flex flex-col gap-6 lg:w-96">
+          <div className="hidden lg:flex flex-col gap-6 lg:w-96">
              <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-8 rounded-[2.5rem] space-y-6">
                 <div className="flex items-center justify-between">
                    <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Total Active Services</div>
@@ -110,10 +109,10 @@ export default function Services() {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-10 items-start">
-        {/* Modern Sidebar Filters */}
-        <aside className="lg:w-80 w-full sticky top-28 space-y-8">
-           <div className="premium-card p-8 rounded-[2.5rem] bg-card space-y-8">
+      <div className="flex flex-col lg:flex-row gap-6 sm:gap-10 items-start">
+        {/* Filters */}
+        <aside className="lg:w-80 w-full lg:sticky lg:top-28 space-y-4 sm:space-y-8">
+           <div className="premium-card p-4 sm:p-8 rounded-2xl sm:rounded-[2.5rem] bg-card space-y-4 sm:space-y-8">
               <div className="flex items-center gap-2">
                  <Filter className="w-4 h-4 text-primary" />
                  <h3 className="font-heading font-black text-sm uppercase tracking-wider">Service Filter</h3>
@@ -125,35 +124,36 @@ export default function Services() {
                   placeholder="Search service..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-11 h-14 rounded-2xl bg-muted/30 border-transparent focus:bg-background focus:border-primary/20 transition-all text-sm font-bold"
+                  className="pl-11 h-12 sm:h-14 rounded-2xl bg-muted/30 border-transparent focus:bg-background focus:border-primary/20 transition-all text-sm font-bold"
                 />
               </div>
 
-              <div className="space-y-3">
-                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">Choose Platform</div>
-                 <div className="grid grid-cols-1 gap-2">
+              {/* Platform filters — horizontal scroll on mobile, vertical on desktop */}
+              <div className="space-y-2">
+                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Platform</div>
+                 <div className="flex lg:flex-col gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
                     {platformFilters.map((p) => (
                       <button
                         key={p.id}
                         onClick={() => setActivePlatform(p.id)}
-                        className={`flex items-center gap-4 p-4 rounded-2xl text-sm font-bold transition-all relative overflow-hidden group ${
+                        className={`flex items-center gap-2 lg:gap-4 px-3 py-2 lg:p-4 rounded-2xl text-sm font-bold transition-all flex-shrink-0 ${
                           activePlatform === p.id
-                            ? 'bg-slate-900 text-white shadow-xl scale-[1.02]'
+                            ? 'bg-slate-900 text-white shadow-xl'
                             : 'bg-muted/30 text-muted-foreground hover:bg-muted/60 hover:text-foreground'
                         }`}
                       >
-                        <div className={`w-8 h-8 rounded-xl ${p.color} flex items-center justify-center text-white shadow-sm`}>
+                        <div className={`w-7 h-7 lg:w-8 lg:h-8 rounded-xl ${p.color} flex items-center justify-center text-white shadow-sm text-xs`}>
                            {p.icon}
                         </div>
-                        <span className="flex-1 text-left">{p.label}</span>
-                        {activePlatform === p.id && <Zap className="w-3 h-3 fill-primary text-primary" />}
+                        <span className="whitespace-nowrap">{p.label}</span>
+                        {activePlatform === p.id && <Zap className="w-3 h-3 fill-primary text-primary hidden lg:block" />}
                       </button>
                     ))}
                  </div>
               </div>
            </div>
 
-           <div className="p-8 rounded-[2.5rem] bg-primary/5 border border-primary/10 space-y-4">
+           <div className="hidden sm:block p-8 rounded-[2.5rem] bg-primary/5 border border-primary/10 space-y-4">
               <div className="flex items-center gap-2">
                  <Info className="w-4 h-4 text-primary" />
                  <h4 className="font-heading font-black text-[10px] uppercase tracking-widest">Support Note</h4>
@@ -202,7 +202,8 @@ export default function Services() {
                        <Badge variant="secondary" className="bg-primary/10 text-primary border-transparent font-black px-4 py-1.5 rounded-full text-[10px] uppercase">{items.length} Options</Badge>
                     </div>
 
-                    <div className="premium-card rounded-[3rem] bg-card overflow-hidden border border-border/30">
+                    {/* Desktop Table — hidden on mobile */}
+                    <div className="hidden sm:block premium-card rounded-[2rem] sm:rounded-[3rem] bg-card overflow-hidden border border-border/30">
                        <div className="overflow-x-auto">
                           <table className="w-full text-left">
                              <thead>
@@ -273,6 +274,30 @@ export default function Services() {
                              </tbody>
                           </table>
                        </div>
+                    </div>
+
+                    {/* Mobile Card List — shown only on mobile */}
+                    <div className="sm:hidden space-y-3">
+                      {items.map((service) => (
+                        <div key={service.id} className="bg-card border border-border/40 rounded-2xl p-4 flex items-start gap-3">
+                          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
+                            <span className="text-primary text-[9px] font-black">{service.service_id?.slice(0,4) || '#'}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold leading-snug mb-1">{service.name}</p>
+                            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wide">
+                              <span>Rs {service.rate_per_1000}/1K</span>
+                              <span>Min {service.min_quantity?.toLocaleString() || 10}</span>
+                              <span className="flex items-center gap-1"><Zap className="w-2.5 h-2.5 text-amber-500" />{service.avg_time || 'Instant'}</span>
+                            </div>
+                          </div>
+                          <Link to={`/new-order?service=${service.id}`} className="flex-shrink-0">
+                            <Button size="sm" className="h-9 px-4 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-wide shadow-md">
+                              Order
+                            </Button>
+                          </Link>
+                        </div>
+                      ))}
                     </div>
                   </motion.div>
                 ))}

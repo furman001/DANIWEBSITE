@@ -165,17 +165,17 @@ export default function NewOrder() {
          <p className="text-muted-foreground font-medium max-w-lg mx-auto">Select your target parameters and launch your social campaign in seconds.</p>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-10 items-start">
+      <div className="grid lg:grid-cols-5 gap-6 sm:gap-10 items-start">
          {/* Form Area */}
-         <div className="lg:col-span-3 space-y-8">
-            <div className="premium-card bg-card p-8 sm:p-10 rounded-[3rem]">
-               <div className="space-y-10">
-                  <div className="space-y-6">
+         <div className="lg:col-span-3 space-y-6 sm:space-y-8">
+            <div className="premium-card bg-card p-5 sm:p-10 rounded-2xl sm:rounded-[3rem]">
+               <div className="space-y-6 sm:space-y-10">
+                  <div className="space-y-4 sm:space-y-6">
                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                           <ShoppingCart className="w-5 h-5 text-primary" />
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                           <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                         </div>
-                        <h2 className="font-heading font-black text-xl tracking-tight uppercase">Service Config</h2>
+                        <h2 className="font-heading font-black text-base sm:text-xl tracking-tight uppercase">Service Config</h2>
                      </div>
 
                      <div className="grid gap-6">
@@ -217,12 +217,12 @@ export default function NewOrder() {
                      </div>
                   </div>
 
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                           <LinkIcon className="w-5 h-5 text-primary" />
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                           <LinkIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                         </div>
-                        <h2 className="font-heading font-black text-xl tracking-tight uppercase">Target Parameters</h2>
+                        <h2 className="font-heading font-black text-base sm:text-xl tracking-tight uppercase">Target Parameters</h2>
                      </div>
 
                      <div className="grid gap-6">
@@ -255,10 +255,24 @@ export default function NewOrder() {
                      </div>
                   </div>
 
+                  {/* Mobile cost strip — visible only on mobile */}
+                  {selectedService && quantity && (
+                     <div className="lg:hidden flex items-center justify-between p-4 rounded-2xl bg-slate-950 text-white">
+                        <div>
+                           <div className="text-[9px] font-black uppercase tracking-widest text-white/40">Total Cost</div>
+                           <div className="text-xl font-black text-primary">Rs {totalCost.toFixed(2)}</div>
+                        </div>
+                        <div className="text-right">
+                           <div className="text-[9px] font-black uppercase tracking-widest text-white/40">Balance After</div>
+                           <div className={`text-sm font-black ${totalCost > walletBalance ? 'text-destructive' : 'text-white/70'}`}>Rs {(walletBalance - totalCost).toFixed(0)}</div>
+                        </div>
+                     </div>
+                  )}
+
                   <Button
                     onClick={() => createOrder.mutate()}
                     disabled={!selectedService || !link || !quantity || totalCost > walletBalance || createOrder.isPending}
-                    className="w-full h-16 rounded-[2rem] font-heading font-black text-lg uppercase tracking-wider shadow-2xl shadow-primary/30 transition-all active:scale-95 group"
+                    className="w-full h-12 sm:h-16 rounded-2xl sm:rounded-[2rem] font-heading font-black text-sm sm:text-lg uppercase tracking-wider shadow-2xl shadow-primary/30 transition-all active:scale-95 group"
                   >
                     {createOrder.isPending ? (
                       <><Loader2 className="w-5 h-5 mr-3 animate-spin" /> Finalizing Node...</>
@@ -270,8 +284,8 @@ export default function NewOrder() {
             </div>
          </div>
 
-         {/* Stats Sidebar */}
-         <div className="lg:col-span-2 space-y-8 sticky top-28">
+         {/* Stats Sidebar — hidden on mobile (cost shown inline above) */}
+         <div className="hidden lg:block lg:col-span-2 space-y-8 sticky top-28">
             <div className="premium-card p-10 rounded-[3rem] bg-slate-950 text-white space-y-8 relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-2xl -mr-16 -mt-16" />
                <div className="relative z-10 space-y-8">
