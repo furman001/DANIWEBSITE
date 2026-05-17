@@ -83,7 +83,8 @@ export default function AddFunds() {
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ['my-transactions'],
     queryFn: async () => {
-      const uid = user?.id ?? session?.user?.id;
+      const { data: { session: freshSession } } = await supabase.auth.getSession();
+      const uid = freshSession?.user?.id ?? user?.id ?? session?.user?.id;
       const { data, error } = await supabase
         .from(TABLES.WALLET_TRANSACTIONS)
         .select('*')
@@ -94,6 +95,7 @@ export default function AddFunds() {
       return data || [];
     },
     enabled: !!(user?.id ?? session?.user?.id),
+    retry: 1,
     staleTime: 0,
   });
 
@@ -120,8 +122,10 @@ export default function AddFunds() {
 
   const submitDeposit = useMutation({
     mutationFn: async () => {
-      const uid = user?.id ?? session?.user?.id;
-      if (!uid) throw new Error('Session expired. Please log in again.');
+      // Always get a fresh session — avoids stale React state issues
+      const { data: { session: freshSession } } = await supabase.auth.getSession();
+      const uid = freshSession?.user?.id ?? user?.id ?? session?.user?.id;
+      if (!uid) throw new Error('Not logged in. Please refresh the page and log in.');
       const amt = Number(amount);
       if (!amt || amt <= 0) throw new Error('Please enter a valid amount');
       if (amt < 50) throw new Error('Minimum deposit amount is Rs 50');
@@ -167,7 +171,7 @@ export default function AddFunds() {
           <div>
             <p className="text-white/70 text-xs font-medium uppercase tracking-wider">Current Balance</p>
             <p className="font-heading text-3xl font-bold mt-1">Rs {walletBalance.toFixed(0)}</p>
-            <p className="text-white/60 text-xs mt-1">{user?.email ?? session?.user?.email}</p>
+            <p className="text-white/60 text-xs mt-1">{user?.email ?? session?.user?.email ?? '—'}</p>
           </div>
           <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
             <Wallet className="w-6 h-6 text-white" />
