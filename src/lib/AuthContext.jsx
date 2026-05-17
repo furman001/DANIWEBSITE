@@ -62,6 +62,13 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       if (error.code === 'PGRST116') {
         await createUserProfile(userId);
+      } else {
+        console.error('fetchUserProfile error:', error);
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (authUser) {
+          setUser({ id: authUser.id, email: authUser.email, role: 'user', wallet_balance: 0 });
+          setIsAuthenticated(true);
+        }
       }
     } finally {
       setIsLoadingAuth(false);

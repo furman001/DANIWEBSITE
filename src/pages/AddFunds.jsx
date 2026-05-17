@@ -72,7 +72,7 @@ const statusConfig = {
 };
 
 export default function AddFunds() {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const queryClient = useQueryClient();
   const [selectedMethod, setSelectedMethod] = useState('easypaisa');
   const [amount, setAmount] = useState('');
@@ -83,16 +83,17 @@ export default function AddFunds() {
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ['my-transactions'],
     queryFn: async () => {
+      const uid = user?.id ?? session?.user?.id;
       const { data, error } = await supabase
         .from(TABLES.WALLET_TRANSACTIONS)
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', uid)
         .order('created_at', { ascending: false })
         .limit(50);
       if (error) throw error;
       return data || [];
     },
-    enabled: !!user?.id,
+    enabled: !!(user?.id ?? session?.user?.id),
     staleTime: 0,
   });
 
@@ -119,6 +120,8 @@ export default function AddFunds() {
 
   const submitDeposit = useMutation({
     mutationFn: async () => {
+      const uid = user?.id ?? session?.user?.id;
+      if (!uid) throw new Error('Session expired. Please log in again.');
       const amt = Number(amount);
       if (!amt || amt <= 0) throw new Error('Please enter a valid amount');
       if (amt < 50) throw new Error('Minimum deposit amount is Rs 50');
@@ -126,7 +129,7 @@ export default function AddFunds() {
       if (reference.trim().length < 4) throw new Error('Transaction ID seems too short');
 
       const { error } = await supabase.from(TABLES.WALLET_TRANSACTIONS).insert({
-        user_id: user.id,
+        user_id: uid,
         type: 'deposit',
         amount: amt,
         method: selectedMethod,
@@ -164,7 +167,7 @@ export default function AddFunds() {
           <div>
             <p className="text-white/70 text-xs font-medium uppercase tracking-wider">Current Balance</p>
             <p className="font-heading text-3xl font-bold mt-1">Rs {walletBalance.toFixed(0)}</p>
-            <p className="text-white/60 text-xs mt-1">{user?.email}</p>
+            <p className="text-white/60 text-xs mt-1">{user?.email ?? session?.user?.email}</p>
           </div>
           <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
             <Wallet className="w-6 h-6 text-white" />
