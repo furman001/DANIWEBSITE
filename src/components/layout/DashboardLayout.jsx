@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
   LayoutDashboard, ShoppingCart, History, Wallet, Plus,
   ListOrdered, Zap, Menu, LogOut, User, ChevronRight, Home, Shield, Bell
 } from 'lucide-react';
-import { supabase } from '@/api/supabaseClient';
+import { supabase, TABLES } from '@/api/supabaseClient';
 import useOrderSync from '@/hooks/useOrderSync';
 import { useAuth } from '@/lib/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const sidebarLinks = [
   { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -119,10 +127,35 @@ function SidebarContent({ onNavigate }) {
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const [pendingDeposits, setPendingDeposits] = useState(0);
+  const { user, isLoadingAuth, isAuthenticated, session, logout } = useAuth();
   const location = useLocation();
+  const isAdmin = user?.role === 'admin' || localStorage.getItem('admin_session') === 'true';
 
-  useOrderSync(user?.email, user?.role === 'admin');
+  useOrderSync(user?.email, isAdmin);
+
+  // Real-time pending deposit count for admin bell
+  useEffect(() => {
+    if (!isAdmin) return;
+    const fetchPending = async () => {
+      const { count } = await supabase
+        .from(TABLES.WALLET_TRANSACTIONS)
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending')
+        .eq('type', 'deposit');
+      setPendingDeposits(count || 0);
+    };
+    fetchPending();
+    const channel = supabase
+      .channel('layout-pending-deposits')
+      .on('postgres_changes', { event: '*', schema: 'public', table: TABLES.WALLET_TRANSACTIONS }, fetchPending)
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  }, [isAdmin]);
+
+  if (!isLoadingAuth && !session) {
+    return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+  }
 
   return (
     <div className="min-h-screen flex bg-background font-body antialiased">
@@ -159,15 +192,69 @@ export default function DashboardLayout() {
              </div>
              
              <div className="flex items-center gap-1">
+                <Link to={isAdmin ? '/admin' : '#'}>
                 <Button variant="ghost" size="icon" className="rounded-full relative h-9 w-9">
                    <Bell className="w-4 h-4" />
-                   <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-primary rounded-full border border-background" />
+                   {isAdmin && pendingDeposits > 0 ? (
+                     <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-red-500 rounded-full border border-background flex items-center justify-center text-[9px] font-black text-white">
+                       {pendingDeposits > 9 ? '9+' : pendingDeposits}
+                     </span>
+                   ) : (
+                     <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-primary rounded-full border border-background" />
+                   )}
                 </Button>
-                <Button variant="ghost" className="hidden sm:flex items-center gap-2 px-2 rounded-full hover:bg-muted/50">
-                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs uppercase">
-                      {user?.name?.[0] || 'U'}
-                   </div>
-                </Button>
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2 px-1.5 sm:px-2 rounded-full hover:bg-muted/50 h-9">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center font-black text-white text-sm uppercase shadow-md shadow-primary/20">
+                        {(user?.name?.[0] || session?.user?.email?.[0] || 'U').toUpperCase()}
+                      </div>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64 rounded-2xl p-2">
+                    <DropdownMenuLabel className="px-3 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center font-black text-white text-base uppercase shadow-md shadow-primary/20">
+                          {(user?.name?.[0] || session?.user?.email?.[0] || 'U').toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold truncate">{user?.name || session?.user?.email?.split('@')[0] || 'User'}</p>
+                          <p className="text-xs text-muted-foreground font-normal truncate">{user?.email || session?.user?.email}</p>
+                        </div>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild className="rounded-xl cursor-pointer py-2.5">
+                      <Link to="/dashboard" className="flex items-center gap-2 w-full">
+                        <LayoutDashboard className="w-4 h-4" />
+                        <span className="font-semibold">Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="rounded-xl cursor-pointer py-2.5">
+                      <Link to="/add-funds" className="flex items-center gap-2 w-full">
+                        <Wallet className="w-4 h-4" />
+                        <span className="font-semibold">Add Funds</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem asChild className="rounded-xl cursor-pointer py-2.5">
+                        <Link to="/admin" className="flex items-center gap-2 w-full">
+                          <Shield className="w-4 h-4" />
+                          <span className="font-semibold">Admin Panel</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => logout(true)}
+                      className="rounded-xl cursor-pointer py-2.5 text-destructive focus:text-destructive focus:bg-destructive/10"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      <span className="font-semibold">Sign out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
              </div>
           </div>
         </header>

@@ -3,7 +3,7 @@ import { supabase, TABLES } from '@/api/supabaseClient';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Zap, TrendingUp, Calendar, ArrowUpRight, ShieldCheck, Bell, Activity } from 'lucide-react';
+import { RefreshCw, Zap, TrendingUp, Calendar, ArrowUpRight, ShieldCheck, Bell, Activity, Mail, BadgeCheck, Wallet, Package, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 
@@ -101,18 +101,31 @@ export default function Dashboard() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md"
             >
               <Zap className="w-3.5 h-3.5 text-primary fill-current" />
-              <span className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em]">{greeting}, {user?.name?.split(' ')[0] || 'Member'}</span>
+              <span className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em]">{greeting}, welcome back</span>
             </motion.div>
             
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="font-heading text-4xl sm:text-5xl lg:text-7xl font-black text-white tracking-tighter leading-none"
+              className="font-heading text-4xl sm:text-5xl lg:text-7xl font-black text-white tracking-tighter leading-none break-words"
             >
-              Command <br />
-              <span className="text-primary italic">Center</span>.
+              Hello, <br />
+              <span className="text-primary italic">
+                {user?.name?.split(' ')[0] || session?.user?.email?.split('@')[0] || 'Member'}
+              </span>.
             </motion.h1>
+
+            {(user?.email || session?.user?.email) && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15 }}
+                className="text-white/50 text-sm font-bold tracking-wide"
+              >
+                Signed in as <span className="text-white">{user?.email || session?.user?.email}</span>
+              </motion.p>
+            )}
             
             <motion.div 
               initial={{ opacity: 0 }}
@@ -198,6 +211,78 @@ export default function Dashboard() {
 
         {/* Sidebar Info */}
         <div className="space-y-6 sm:space-y-10 lg:sticky lg:top-28">
+          {/* User Status Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="premium-card rounded-[2rem] sm:rounded-[3rem] bg-card p-6 sm:p-8 relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20" />
+            <div className="relative z-10 space-y-5">
+              {/* Avatar + Identity */}
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-primary/30">
+                    {user?.name?.[0]?.toUpperCase() || session?.user?.email?.[0]?.toUpperCase() || 'U'}
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 border-2 border-card flex items-center justify-center">
+                    <BadgeCheck className="w-3 h-3 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-heading font-black text-lg tracking-tight truncate">
+                    {user?.name || session?.user?.email?.split('@')[0] || 'Member'}
+                  </h3>
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <Mail className="w-3 h-3 flex-shrink-0" />
+                    <span className="text-xs truncate">{user?.email || session?.user?.email}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status Pills */}
+              <div className="flex flex-wrap gap-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-green-600">Active</span>
+                </div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+                  <ShieldCheck className="w-3 h-3 text-primary" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                    {user?.role === 'admin' ? 'Admin' : 'Verified'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Stats Rows */}
+              <div className="space-y-2 pt-2 border-t border-border/50">
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Wallet className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-widest">Balance</span>
+                  </div>
+                  <span className="font-heading font-black text-base">Rs {walletBalance.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-t border-border/30">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Package className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-widest">Orders</span>
+                  </div>
+                  <span className="font-heading font-black text-base">{orders.length}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-t border-border/30">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Clock className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-widest">Joined</span>
+                  </div>
+                  <span className="font-heading font-black text-base">
+                    {user?.created_at ? format(new Date(user.created_at), 'MMM yyyy') : '—'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           {/* <AIInsights
             orders={orders}
             walletBalance={walletBalance}

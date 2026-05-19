@@ -13,6 +13,7 @@ import DashboardLayout from './components/layout/DashboardLayout';
 
 // Public pages
 import Home from './pages/Home';
+import Login from './pages/Login';
 import Services from './pages/Services';
 import RefundPolicy from './pages/RefundPolicy';
 import Terms from './pages/Terms';
@@ -60,6 +61,9 @@ const AuthenticatedApp = () => {
         <Route path="/terms" element={<Terms />} />
         <Route path="/api-docs" element={<ApiDocs />} />
       </Route>
+
+      {/* Auth pages — no navbar/footer */}
+      <Route path="/login" element={<Login />} />
 
       {/* Dashboard pages with sidebar */}
       <Route element={<DashboardLayout />}>

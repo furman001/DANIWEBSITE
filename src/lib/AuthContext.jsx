@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { supabase, TABLES } from '@/api/supabaseClient';
+import { queryClientInstance } from '@/lib/query-client';
 
 const AuthContext = createContext();
 
@@ -28,6 +29,23 @@ export const AuthProvider = ({ children }) => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Real-time: keep `user` in sync with the DB row (e.g. wallet_balance after admin approval)
+  useEffect(() => {
+    const uid = session?.user?.id;
+    if (!uid) return;
+    const channel = supabase
+      .channel(`user-profile-${uid}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: TABLES.USERS, filter: `id=eq.${uid}` },
+        (payload) => {
+          if (payload.new) setUser(payload.new);
+        }
+      )
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  }, [session?.user?.id]);
 
   const checkSession = async () => {
     try {
@@ -60,16 +78,8 @@ export const AuthProvider = ({ children }) => {
       setUser(data);
       setIsAuthenticated(true);
     } catch (error) {
-      if (error.code === 'PGRST116') {
-        await createUserProfile(userId);
-      } else {
-        console.error('fetchUserProfile error:', error);
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        if (authUser) {
-          setUser({ id: authUser.id, email: authUser.email, role: 'user', wallet_balance: 0 });
-          setIsAuthenticated(true);
-        }
-      }
+      console.error('fetchUserProfile error:', error.code, error.message);
+      await createUserProfile(userId);
     } finally {
       setIsLoadingAuth(false);
     }
@@ -78,16 +88,20 @@ export const AuthProvider = ({ children }) => {
   const createUserProfile = async (userId) => {
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      
+      const displayName = authUser?.user_metadata?.name
+        || authUser?.raw_user_meta_data?.name
+        || authUser?.email?.split('@')[0]
+        || 'User';
+
       const { data, error } = await supabase
         .from(TABLES.USERS)
-        .insert({
+        .upsert({
           id: userId,
           email: authUser?.email || 'user@example.com',
-          name: authUser?.email?.split('@')[0] || 'User',
+          name: displayName,
           role: 'user',
           wallet_balance: 0
-        })
+        }, { onConflict: 'id' })
         .select()
         .single();
 
@@ -137,13 +151,14 @@ export const AuthProvider = ({ children }) => {
       if (error) throw error;
 
       if (data.user) {
-        await supabase.from(TABLES.USERS).insert({
+        // Upsert so it doesn't conflict with the auth trigger that auto-creates profiles
+        await supabase.from(TABLES.USERS).upsert({
           id: data.user.id,
           email: data.user.email,
           name: name || email.split('@')[0],
           role: 'user',
           wallet_balance: 0
-        });
+        }, { onConflict: 'id' });
       }
 
       return { success: true, data };
@@ -180,6 +195,8 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setSession(null);
       setIsAuthenticated(false);
+      // Clear all cached query data so the next user doesn't see stale info
+      queryClientInstance.clear();
     } catch (error) {
       console.error('Sign out error:', error);
     }

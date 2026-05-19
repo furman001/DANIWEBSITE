@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase, TABLES } from '@/api/supabaseClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/lib/AuthContext';
@@ -99,6 +99,28 @@ export default function AddFunds() {
     staleTime: 0,
   });
 
+  // Real-time: auto-refresh when admin approves/rejects this user's transactions
+  useEffect(() => {
+    const uid = user?.id ?? session?.user?.id;
+    if (!uid) return;
+    const channel = supabase
+      .channel(`user-txns-${uid}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: TABLES.WALLET_TRANSACTIONS, filter: `user_id=eq.${uid}` },
+        (payload) => {
+          if (payload.new?.status === 'approved') {
+            toast.success(`✅ Your deposit of Rs ${payload.new.amount} has been approved!`);
+          } else if (payload.new?.status === 'rejected') {
+            toast.error(`❌ Your deposit of Rs ${payload.new.amount} was rejected.`);
+          }
+          queryClient.invalidateQueries({ queryKey: ['my-transactions'] });
+        }
+      )
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  }, [user?.id, session?.user?.id, queryClient]);
+
   const walletBalance = transactions.reduce((bal, tx) => {
     if (tx.status !== 'approved') return bal;
     if (tx.type === 'deposit' || tx.type === 'refund') return bal + (tx.amount || 0);
@@ -132,6 +154,17 @@ export default function AddFunds() {
       if (!reference.trim()) throw new Error('Please enter your Transaction ID');
       if (reference.trim().length < 4) throw new Error('Transaction ID seems too short');
 
+      // Ensure user profile row exists (satisfies FK constraint)
+      const { error: upsertErr } = await supabase.from(TABLES.USERS).upsert(
+        { id: uid, email: freshSession.user.email, name: freshSession.user.email?.split('@')[0] || 'User', role: 'user', wallet_balance: 0 },
+        { onConflict: 'id', ignoreDuplicates: true }
+      );
+      // Ignore duplicate-key (profile already exists); fail on real RLS / permission errors
+      if (upsertErr && upsertErr.code !== '23505') {
+        console.error('Profile upsert failed:', upsertErr);
+        throw new Error('Could not prepare your account for deposits. Please refresh and try again.');
+      }
+
       const { error } = await supabase.from(TABLES.WALLET_TRANSACTIONS).insert({
         user_id: uid,
         type: 'deposit',
@@ -144,7 +177,7 @@ export default function AddFunds() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('✅ Deposit request submitted! Admin will approve within a few hours.');
+      toast.success('✅ Deposit request submitted! You\'ll be notified once the admin approves.');
       setAmount('');
       setReference('');
       queryClient.invalidateQueries({ queryKey: ['my-transactions'] });
@@ -341,7 +374,7 @@ export default function AddFunds() {
             <div className="flex items-start gap-2 bg-amber-500/5 border border-amber-500/20 rounded-xl p-3">
               <Shield className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-muted-foreground">
-                <span className="font-semibold text-foreground">Secure & Verified.</span> Your deposit will be manually verified by admin. Funds are added within 1-3 hours after confirmation.
+                <span className="font-semibold text-foreground">Secure & Verified.</span> Your deposit will be verified by admin. Funds are added after confirmation.
               </p>
             </div>
 

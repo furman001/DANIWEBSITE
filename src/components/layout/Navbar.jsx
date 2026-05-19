@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, X, Zap, Globe, FileText, Shield, Code, ChevronRight } from 'lucide-react';
+import { Menu, X, Zap, Globe, FileText, Shield, Code, ChevronRight, LogIn, UserPlus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/lib/AuthContext';
 
 const navLinks = [
   { label: 'Services', path: '/services', icon: Globe },
@@ -14,6 +15,8 @@ const navLinks = [
 
 export default function Navbar() {
   const location = useLocation();
+  const { isAuthenticated, session } = useAuth();
+  const isLoggedIn = isAuthenticated || !!session;
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -62,12 +65,26 @@ export default function Navbar() {
 
             <div className="h-6 w-px bg-border/60 mx-2" />
 
-            <Link to="/dashboard">
-              <Button size="sm" className="font-bold px-6 shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all rounded-full group">
-                Dashboard
-                <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link to="/login">
+                <Button variant="ghost" size="sm" className="font-bold rounded-full hover:bg-primary/10">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/login?mode=register">
+                <Button variant="outline" size="sm" className="font-bold rounded-full border-primary/30 text-primary hover:bg-primary/10">
+                  Sign Up
+                </Button>
+              </Link>
+              {isLoggedIn && (
+                <Link to="/dashboard">
+                  <Button size="sm" className="font-bold px-6 shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all rounded-full group">
+                    Dashboard
+                    <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -113,12 +130,24 @@ export default function Navbar() {
                   ))}
                 </div>
 
-                <div className="p-6 border-t border-border/50 bg-muted/20">
-                  <Link to="/dashboard" onClick={() => setOpen(false)}>
-                    <Button className="w-full h-14 text-lg font-bold rounded-2xl shadow-xl shadow-primary/20">
-                      Go to Dashboard
+                <div className="p-6 border-t border-border/50 bg-muted/20 space-y-2">
+                  <Link to="/login" onClick={() => setOpen(false)}>
+                    <Button variant="outline" className="w-full h-12 text-base font-bold rounded-2xl gap-2">
+                      <LogIn className="w-4 h-4" /> Sign In
                     </Button>
                   </Link>
+                  <Link to="/login?mode=register" onClick={() => setOpen(false)}>
+                    <Button variant="outline" className="w-full h-12 text-base font-bold rounded-2xl gap-2 border-primary/30 text-primary hover:bg-primary/10">
+                      <UserPlus className="w-4 h-4" /> Sign Up
+                    </Button>
+                  </Link>
+                  {isLoggedIn && (
+                    <Link to="/dashboard" onClick={() => setOpen(false)}>
+                      <Button className="w-full h-14 text-lg font-bold rounded-2xl shadow-xl shadow-primary/20">
+                        Go to Dashboard
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </div>
             </SheetContent>
@@ -127,4 +156,4 @@ export default function Navbar() {
       </div>
     </nav>
   );
-}
+}
